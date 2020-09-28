@@ -28,7 +28,6 @@ type Reporter interface {
 type PrettyReporter struct {
 	Output                   io.Writer
 	Verbose                  bool
-	FailureLine              bool
 	BenchmarkResults         bool
 	BenchMarkShowAllocations bool
 	BenchMarkGoBenchFormat   bool
@@ -78,15 +77,7 @@ func (r PrettyReporter) Report(ch chan *Result) error {
 			fmt.Fprintln(r.Output, tr)
 		} else if !tr.Pass() {
 			dirty = true
-			if r.FailureLine {
-				if tr.FailedAt != nil {
-					fmt.Fprintf(r.Output, "%v (%s:%d) \n", tr, tr.FailedAt.Location.File, tr.FailedAt.Location.Row)
-				} else {
-					fmt.Fprintf(r.Output, "%v (test skipped because success not possible) \n", tr)
-				}
-			} else {
-				fmt.Fprintln(r.Output, tr)
-			}
+			fmt.Fprintln(r.Output, tr)
 		}
 		if tr.Error != nil {
 			fmt.Fprintf(r.Output, "  %v\n", tr.Error)

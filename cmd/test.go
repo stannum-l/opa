@@ -41,7 +41,6 @@ type testCommandParams struct {
 	threshold    float64
 	timeout      time.Duration
 	ignore       []string
-	failureLine  bool
 	bundleMode   bool
 	benchmark    bool
 	benchMem     bool
@@ -205,7 +204,6 @@ func opaTest(args []string) int {
 		SetStore(store).
 		EnableTracing(testParams.verbose).
 		SetCoverageQueryTracer(coverTracer).
-		EnableFailureLine(testParams.failureLine).
 		SetRuntime(info).
 		SetModules(modules).
 		SetBundles(bundles).
@@ -228,7 +226,6 @@ func opaTest(args []string) int {
 		default:
 			reporter = tester.PrettyReporter{
 				Verbose:                  testParams.verbose,
-				FailureLine:              testParams.failureLine,
 				Output:                   os.Stdout,
 				BenchmarkResults:         testParams.benchmark,
 				BenchMarkShowAllocations: testParams.benchMem,
@@ -328,8 +325,6 @@ func filterTrace(params *testCommandParams, trace []*topdown.Event) []*topdown.E
 
 func init() {
 	testCommand.Flags().BoolVarP(&testParams.verbose, "verbose", "v", false, "set verbose reporting mode")
-	testCommand.Flags().BoolVarP(&testParams.failureLine, "show-failure-line", "l", false, "show test failure line")
-	testCommand.Flags().MarkDeprecated("show-failure-line", "use -v instead")
 	testCommand.Flags().DurationVarP(&testParams.timeout, "timeout", "t", time.Second*5, "set test timeout")
 	testCommand.Flags().VarP(testParams.outputFormat, "format", "f", "set output format")
 	testCommand.Flags().BoolVarP(&testParams.coverage, "coverage", "c", false, "report coverage (overrides debug tracing)")
